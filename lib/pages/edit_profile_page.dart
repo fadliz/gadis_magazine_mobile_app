@@ -3,6 +3,8 @@ import '../components/custom_app_bar.dart';
 import '../components/bottom_nav_bar.dart';
 
 class EditProfilePage extends StatefulWidget {
+  const EditProfilePage({super.key});
+
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
 }
@@ -32,12 +34,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Edit Profile'),
+      appBar: const CustomAppBar(title: 'Profile'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
-            CircleAvatar(
+            const CircleAvatar(
               backgroundImage: AssetImage(
                   'assets/images/profile.jpg'), // Add your image asset here
               radius: 50,
@@ -46,35 +48,35 @@ class _EditProfilePageState extends State<EditProfilePage> {
               onPressed: () {
                 // Handle edit picture functionality here
               },
-              child: Text('Edit picture', style: TextStyle(color: Colors.pink)),
+              child: const Text('Edit picture', style: TextStyle(color: Colors.pink)),
             ),
             TextField(
               controller: _usernameController,
-              decoration: InputDecoration(labelText: 'Username'),
+              decoration: const InputDecoration(labelText: 'Username'),
             ),
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
+              decoration: const InputDecoration(labelText: 'Name'),
             ),
             TextField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
+              decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 // Handle save functionality here
               },
-              child: Text('Save'),
               style: ElevatedButton.styleFrom(
                 backgroundColor:
                     Colors.pink, // Use backgroundColor instead of primary
               ),
+              child: const Text('Save'),
             ),
           ],
         ),

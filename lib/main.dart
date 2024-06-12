@@ -7,10 +7,12 @@ import 'pages/register_page.dart';
 import 'pages/profile_page.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,12 +22,12 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/article',
       routes: {
-        '/': (context) => LandingPage(),
-        '/articles': (context) => ArticlesPage(),
-        '/article': (context) => ShowArticlePage(),
-        '/login': (context) => LoginPage(),
-        '/register': (context) => RegisterPage(),
-        '/profile': (context) => ProfilePage(),
+        '/': (context) => const LandingPage(),
+        '/articles': (context) => const ArticlesPage(),
+        '/article': (context) => const ShowArticlePage(),
+        '/login': (context) => const LoginPage(),
+        '/register': (context) => const RegisterPage(),
+        '/profile': (context) => const ProfilePage(),
       },
     );
   }

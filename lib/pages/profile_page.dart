@@ -4,6 +4,8 @@ import '../components/bottom_nav_bar.dart';
 import 'edit_profile_page.dart';
 
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -21,7 +23,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void _navigateToEditProfile() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EditProfilePage()),
+      MaterialPageRoute(builder: (context) => const EditProfilePage()),
     );
   }
 
@@ -30,20 +32,20 @@ class _ProfilePageState extends State<ProfilePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Log out'),
-          content: Text('Are you sure you want to logout from your account?'),
+          title: const Text('Log out'),
+          content: const Text('Are you sure you want to logout from your account?'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 // Handle logout functionality here
               },
-              child: Text('Log out', style: TextStyle(color: Colors.red)),
+              child: const Text('Log out', style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -54,12 +56,12 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Profile'),
+      appBar: const CustomAppBar(title: 'Profile'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
-            ListTile(
+            const ListTile(
               leading: CircleAvatar(
                 backgroundImage: AssetImage('assets/images/profile.jpg'), // Add your image asset here
               ),
@@ -67,15 +69,15 @@ class _ProfilePageState extends State<ProfilePage> {
               subtitle: Text('@Lorem'),
             ),
             ListTile(
-              leading: Icon(Icons.person_outline, color: Colors.pink),
-              title: Text('My Account'),
-              subtitle: Text('Make changes to your account'),
+              leading: const Icon(Icons.person_outline, color: Colors.pink),
+              title: const Text('My Account'),
+              subtitle: const Text('Make changes to your account'),
               onTap: _navigateToEditProfile,
             ),
             ListTile(
-              leading: Icon(Icons.logout, color: Colors.red),
-              title: Text('Log out', style: TextStyle(color: Colors.red)),
-              subtitle: Text('Further secure your account for safety'),
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: const Text('Log out', style: TextStyle(color: Colors.red)),
+              subtitle: const Text('Further secure your account for safety'),
               onTap: _showLogoutDialog,
             ),
           ],

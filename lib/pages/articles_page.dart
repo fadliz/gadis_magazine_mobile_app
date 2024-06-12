@@ -3,6 +3,8 @@ import '../components/custom_app_bar.dart';
 import '../components/bottom_nav_bar.dart';
 
 class ArticlesPage extends StatefulWidget {
+  const ArticlesPage({super.key});
+
   @override
   _ArticlesPageState createState() => _ArticlesPageState();
 }
@@ -20,13 +22,13 @@ class _ArticlesPageState extends State<ArticlesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Articles'),
+      appBar: const CustomAppBar(),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView.builder(
           itemCount: 5,  // Replace with the actual number of articles
           itemBuilder: (context, index) {
-            return ArticleCard();
+            return const ArticleCard();
           },
         ),
       ),
@@ -39,6 +41,8 @@ class _ArticlesPageState extends State<ArticlesPage> {
 }
 
 class ArticleCard extends StatelessWidget {
+  const ArticleCard({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -53,34 +57,34 @@ class ArticleCard extends StatelessWidget {
               height: 100,
               fit: BoxFit.cover,
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'BEAUTY',
                     style: TextStyle(
                       color: Colors.pink,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 8),
-                  Text(
+                  const SizedBox(height: 8),
+                  const Text(
                     'The Power of Make Up',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'Lorem ipsum dolor sit amet, elite consectetur adipiscing ams da sakaske bajerl eiusmod...',
                     style: TextStyle(
                       color: Colors.grey[600],
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'by Tasya Farasya',
                     style: TextStyle(

@@ -3,6 +3,8 @@ import '../components/custom_app_bar.dart';
 import '../components/bottom_nav_bar.dart';
 
 class ShowArticlePage extends StatefulWidget {
+  const ShowArticlePage({super.key});
+
   @override
   _ShowArticlePageState createState() => _ShowArticlePageState();
 }
@@ -21,51 +23,51 @@ class _ShowArticlePageState extends State<ShowArticlePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Article'),
+      appBar: const CustomAppBar(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'The Power of Make Up',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8),
-              Text(
+              const SizedBox(height: 8),
+              const Text(
                 '9 October 2023 • by Tasya Farasya',
                 style: TextStyle(
                   color: Colors.grey,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Image.asset(
                 'assets/images/profile.jpg',  // Replace with the actual image path
                 width: double.infinity,
                 height: 200,
                 fit: BoxFit.cover,
               ),
-              SizedBox(height: 16),
-              Text(
+              const SizedBox(height: 16),
+              const Text(
                 'Lorem ipsum dolor sit amet, elite consectetur adipiscing, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum. Lorem ipsum dolor sit amet, elite consectetur adipiscing, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum...',
                 style: TextStyle(
                   fontSize: 16,
                   height: 1.5,
                 ),
               ),
-              SizedBox(height: 16),
-              Text(
+              const SizedBox(height: 16),
+              const Text(
                 'Comment',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Divider(),
+              const Divider(),
               /* _isLoggedIn ? */ _buildCommentSection() /* : _buildLoginPrompt() */,
             ],
           ),
@@ -81,8 +83,8 @@ class _ShowArticlePageState extends State<ShowArticlePage> {
   Widget _buildLoginPrompt() {
     return Column(
       children: [
-        Text('You must be logged in to post a comment'),
-        SizedBox(height: 8),
+        const Text('You must be logged in to post a comment'),
+        const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -90,14 +92,14 @@ class _ShowArticlePageState extends State<ShowArticlePage> {
               onPressed: () {
                 // Navigate to sign in page
               },
-              child: Text('Sign in'),
+              child: const Text('Sign in'),
             ),
-            Text('or'),
+            const Text('or'),
             TextButton(
               onPressed: () {
                 // Navigate to sign up page
               },
-              child: Text('Sign up'),
+              child: const Text('Sign up'),
             ),
           ],
         ),
@@ -112,26 +114,26 @@ class _ShowArticlePageState extends State<ShowArticlePage> {
           decoration: InputDecoration(
             hintText: 'Write a comment ...',
             suffixIcon: IconButton(
-              icon: Icon(Icons.send),
+              icon: const Icon(Icons.send),
               onPressed: () {
                 // Handle comment post
               },
             ),
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         _buildComment('Jessica22', 'Lorem ipsum dolor sit amet, elite consectetur adipiscing, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', '6h ago'),
         _buildComment('Rian.cool.guy', 'Lorem ipsum dolor sit amet, elite consectetur adipiscing, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', '6h ago'),
         _buildComment('TeddyBear', 'Lorem ipsum dolor sit amet, elite consectetur adipiscing, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', '6h ago'),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         ElevatedButton(
           onPressed: () {
             // Load more comments
           },
-          child: Text('Show more'),
           style: ElevatedButton.styleFrom(
             backgroundColor : Colors.pink,
           ),
+          child: const Text('Show more'),
         ),
       ],
     );
@@ -147,31 +149,31 @@ class _ShowArticlePageState extends State<ShowArticlePage> {
             // Replace with actual user profile image if available
             child: Text(username[0]),
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   username,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(content),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Row(
                   children: [
                     Text(
                       time,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.grey,
                         fontSize: 12,
                       ),
                     ),
-                    SizedBox(width: 16),
-                    Text(
+                    const SizedBox(width: 16),
+                    const Text(
                       'Reply',
                       style: TextStyle(
                         color: Colors.pink,
