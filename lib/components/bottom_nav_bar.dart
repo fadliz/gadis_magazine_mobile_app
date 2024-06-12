@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int selectedIndex;
@@ -24,21 +25,29 @@ class BottomNavBar extends StatelessWidget {
             break;
         }
       },
-      items: const <BottomNavigationBarItem>[
+      items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-          icon: Icon(Icons.home),
+          icon: SvgPicture.asset(
+            'assets/icons/home.svg',
+            color: selectedIndex == 0 ? const Color(0xFFFD507E) : Colors.grey,
+          ),
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.article),
+          icon: SvgPicture.asset(
+            selectedIndex == 1 ? 'assets/icons/article-pink.svg':'assets/icons/article.svg',
+          ),
           label: 'Article',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.account_circle),
+          icon: SvgPicture.asset(
+            'assets/icons/profile.svg',
+            color: selectedIndex == 2 ? const Color(0xFFFD507E) : Colors.grey,
+          ),
           label: 'Account',
         ),
       ],
-      selectedItemColor: Colors.pink,
+      selectedItemColor: const Color(0xFFFD507E),
     );
   }
 }

@@ -33,7 +33,8 @@ class _ProfilePageState extends State<ProfilePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Log out'),
-          content: const Text('Are you sure you want to logout from your account?'),
+          content:
+              const Text('Are you sure you want to logout from your account?'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -56,29 +57,108 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFCF6F6),
       appBar: const CustomAppBar(title: 'Profile'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          children: <Widget>[
-            const ListTile(
-              leading: CircleAvatar(
-                backgroundImage: AssetImage('assets/images/profile.jpg'), // Add your image asset here
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              margin: const EdgeInsets.only(bottom: 16.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12.0),
               ),
-              title: Text('Lorem Ipsum'),
-              subtitle: Text('@Lorem'),
+              child: const ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: AssetImage(
+                      'assets/images/profile.jpg'), // Add your image asset here
+                ),
+                title: Text(
+                  'Lorem Ipsum',
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontVariations: [FontVariation('wght', 600)],
+                    fontSize: 16,
+                  ),
+                ),
+                subtitle: Text(
+                  '@Lorem',
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontVariations: [FontVariation('wght', 400)],
+                    fontSize: 14,
+                    color: Color(0xffb4b4b4),
+                  ),
+                ),
+              ),
             ),
-            ListTile(
-              leading: const Icon(Icons.person_outline, color: Colors.pink),
-              title: const Text('My Account'),
-              subtitle: const Text('Make changes to your account'),
-              onTap: _navigateToEditProfile,
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout, color: Colors.red),
-              title: const Text('Log out', style: TextStyle(color: Colors.red)),
-              subtitle: const Text('Further secure your account for safety'),
-              onTap: _showLogoutDialog,
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              child: Column(
+                children: <Widget>[
+                  ListTile(
+                    leading:
+                        const Icon(Icons.person_outline, color: Colors.pink),
+                    title: const Text(
+                      'My Account',
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontVariations: [FontVariation('wght', 500)],
+                        fontSize: 16,
+                      ),
+                    ),
+                    subtitle: const Text(
+                      'Make changes to your account',
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontVariations: [FontVariation('wght', 400)],
+                        fontSize: 12,
+                        color: Color(0xffb4b4b4),
+                      ),
+                    ),
+                    trailing: const Padding(
+                      padding: EdgeInsets.only(right: 0.0),
+                      child: Icon(Icons.arrow_forward_ios,
+                          color: Colors.grey, size: 16),
+                    ),
+                    onTap: _navigateToEditProfile,
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.logout, color: Colors.red),
+                    title: const Text(
+                      'Log out',
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontVariations: [FontVariation('wght', 500)],
+                        fontSize: 16,
+                        color: Colors.red,
+                      ),
+                    ),
+                    subtitle: const Text(
+                      'Further secure your account for safety',
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontVariations: [FontVariation('wght', 400)],
+                        fontSize: 12,
+                        color: Color(0xffb4b4b4),
+                      ),
+                    ),
+                    trailing: const Padding(
+                      padding: EdgeInsets.only(right: 0.0),
+                      child: Icon(Icons.arrow_forward_ios,
+                          color: Colors.grey, size: 16),
+                    ),
+                    onTap: _showLogoutDialog,
+                  ),
+                ],
+              ),
             ),
           ],
         ),

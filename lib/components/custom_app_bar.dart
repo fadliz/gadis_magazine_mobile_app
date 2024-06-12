@@ -11,16 +11,20 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: const Color(0xfffd507e),
       flexibleSpace: FlexibleSpaceBar(
-        title: title!= null
-       ? Text(
-              title!,
-              style: const TextStyle(fontFamily: 'Rubik', fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-            )
-          : Image(
-              image: image?? const AssetImage('assets/icons/logo.png'),
-              height: kToolbarHeight/1.5,
-              fit: BoxFit.cover,
-            ),
+        title: title != null
+            ? Text(
+                title!,
+                style: const TextStyle(
+                    fontFamily: 'Rubik',
+                    fontSize: 24,
+                    fontVariations: [FontVariation('wght', 700)],
+                    color: Colors.white),
+              )
+            : Image(
+                image: image ?? const AssetImage('assets/icons/logo.png'),
+                height: kToolbarHeight / 1.5,
+                fit: BoxFit.cover,
+              ),
         centerTitle: true,
       ),
     );

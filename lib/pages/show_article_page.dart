@@ -1,78 +1,125 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../components/custom_app_bar.dart';
 import '../components/bottom_nav_bar.dart';
+import 'dart:convert';
+import '../../constant.dart';
+import 'package:intl/intl.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ShowArticlePage extends StatefulWidget {
-  const ShowArticlePage({super.key});
+  final int articleId;
+
+  const ShowArticlePage({Key? key, required this.articleId}) : super(key: key);
 
   @override
   _ShowArticlePageState createState() => _ShowArticlePageState();
 }
 
 class _ShowArticlePageState extends State<ShowArticlePage> {
-  int _selectedIndex = 1;
-  /* bool _isLoggedIn = false; */  // Change this based on actual authentication status
+  late Map<String, dynamic> _articleData;
+  int _selectedIndex = 0;
+  bool _isLoading = true; // Add this variable
+  bool _showAllComments = false; // Add this variable
+  List<dynamic> _displayedComments = []; // List to store displayed comments
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      // Handle navigation based on the index
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchArticle();
+  }
+
+  Future<void> _fetchArticle() async {
+    final response =
+        await http.get(Uri.parse('${articlesURL}/${widget.articleId}'));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        _articleData = data['article'];
+        _isLoading = false;
+      });
+    } else {
+      // Handle error
+      print('Failed to fetch article');
+      setState(() {
+        _isLoading = false; // Set isLoading to false even in case of error
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'The Power of Make Up',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+      backgroundColor: const Color(0xFFFCF6F6),
+      appBar: CustomAppBar(),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator()) // Show loading indicator
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _articleData['title'] ?? '',
+                      style: const TextStyle(
+                        fontFamily: 'Rubik',
+                        fontVariations: [FontVariation('wght', 700)],
+                        fontSize: 24,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${DateFormat('MMM d, y').format(DateTime.parse(_articleData['created_at']))} • by ${_articleData['author']}',
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontVariations: [FontVariation('wght', 400)],
+                        fontSize: 12,
+                        color: Color(0xfffd507e),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Image.network(
+                      '${baseURL}/storage/${_articleData['image']}',
+                      width: double.infinity,
+                      height: 200,
+                      fit: BoxFit.cover,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      _articleData['content'] ?? '',
+                      textAlign: TextAlign.justify,
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontVariations: [FontVariation('wght', 400)],
+                        fontSize: 12,
+                        color: Color(0xff6a6a6a),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Comment',
+                      style: TextStyle(
+                        fontFamily: 'Rubik',
+                        fontVariations: [FontVariation('wght', 700)],
+                        fontSize: 18,
+                      ),
+                    ),
+                    const Divider(
+                      color: Colors.black,
+                    ),
+                    _buildCommentSection(),
+                  ],
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text(
-                '9 October 2023 • by Tasya Farasya',
-                style: TextStyle(
-                  color: Colors.grey,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Image.asset(
-                'assets/images/profile.jpg',  // Replace with the actual image path
-                width: double.infinity,
-                height: 200,
-                fit: BoxFit.cover,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Lorem ipsum dolor sit amet, elite consectetur adipiscing, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum. Lorem ipsum dolor sit amet, elite consectetur adipiscing, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum...',
-                style: TextStyle(
-                  fontSize: 16,
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Comment',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Divider(),
-              /* _isLoggedIn ? */ _buildCommentSection() /* : _buildLoginPrompt() */,
-            ],
-          ),
-        ),
-      ),
+            ),
       bottomNavigationBar: BottomNavBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
@@ -80,63 +127,51 @@ class _ShowArticlePageState extends State<ShowArticlePage> {
     );
   }
 
-  Widget _buildLoginPrompt() {
-    return Column(
-      children: [
-        const Text('You must be logged in to post a comment'),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextButton(
-              onPressed: () {
-                // Navigate to sign in page
-              },
-              child: const Text('Sign in'),
-            ),
-            const Text('or'),
-            TextButton(
-              onPressed: () {
-                // Navigate to sign up page
-              },
-              child: const Text('Sign up'),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   Widget _buildCommentSection() {
-    return Column(
-      children: [
-        TextField(
-          decoration: InputDecoration(
-            hintText: 'Write a comment ...',
-            suffixIcon: IconButton(
-              icon: const Icon(Icons.send),
-              onPressed: () {
-                // Handle comment post
-              },
+    if (_articleData.containsKey('comments')) {
+      final List<dynamic> allComments = _articleData['comments'];
+      _displayedComments =
+          _showAllComments ? allComments : allComments.take(4).toList();
+
+      return Column(
+        children: [
+          for (var comment in _displayedComments)
+            _buildComment(
+              comment['user']['username'],
+              comment['content'],
+              comment['created_at'],
+            ),
+          if (!_showAllComments &&
+              allComments.length >
+                  4) // Conditionally render the button only if there are more than 4 comments
+            SizedBox(height: 16),
+          Center(
+            child: SizedBox(
+              width: 193,
+              height: 54,
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _showAllComments = true;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xfffd507e),
+                  foregroundColor: Colors.white,
+                  side: BorderSide(color: Color(0xfffd507e)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: Text('Show More'),
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 16),
-        _buildComment('Jessica22', 'Lorem ipsum dolor sit amet, elite consectetur adipiscing, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', '6h ago'),
-        _buildComment('Rian.cool.guy', 'Lorem ipsum dolor sit amet, elite consectetur adipiscing, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', '6h ago'),
-        _buildComment('TeddyBear', 'Lorem ipsum dolor sit amet, elite consectetur adipiscing, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', '6h ago'),
-        const SizedBox(height: 16),
-        ElevatedButton(
-          onPressed: () {
-            // Load more comments
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor : Colors.pink,
-          ),
-          child: const Text('Show more'),
-        ),
-      ],
-    );
+        ],
+      );
+    } else {
+      return SizedBox();
+    }
   }
 
   Widget _buildComment(String username, String content, String time) {
@@ -147,7 +182,14 @@ class _ShowArticlePageState extends State<ShowArticlePage> {
         children: [
           CircleAvatar(
             // Replace with actual user profile image if available
-            child: Text(username[0]),
+            child: Text(
+              username[0],
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                fontVariations: [FontVariation('wght', 600)],
+                fontSize: 12,
+              ),
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -157,19 +199,29 @@ class _ShowArticlePageState extends State<ShowArticlePage> {
                 Text(
                   username,
                   style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Inter',
+                    fontVariations: [FontVariation('wght', 600)],
+                    fontSize: 12,
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(content),
+                Text(
+                  content,
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontVariations: [FontVariation('wght', 400)],
+                    fontSize: 12,
+                    color: Color(0xff6a6a6a),
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
                     Text(
-                      time,
+                      timeago.format(DateTime.parse(time), locale: 'en'),
                       style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 12,
+                        color: Color(0xffb4b4b4),
+                        fontSize: 10,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -178,6 +230,7 @@ class _ShowArticlePageState extends State<ShowArticlePage> {
                       style: TextStyle(
                         color: Colors.pink,
                         fontSize: 12,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],

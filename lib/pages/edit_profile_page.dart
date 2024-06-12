@@ -14,7 +14,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -31,52 +31,94 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.dispose();
   }
 
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    bool obscureText = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.black54,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+              borderSide: BorderSide(color: Color(0xffe6e6e6)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+              borderSide: BorderSide(color: Color(0xffe6e6e6)),
+            ),
+            contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+          ),
+          obscureText: obscureText,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFCF6F6),
       appBar: const CustomAppBar(title: 'Profile'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const CircleAvatar(
-              backgroundImage: AssetImage(
-                  'assets/images/profile.jpg'), // Add your image asset here
-              radius: 50,
-            ),
-            TextButton(
-              onPressed: () {
-                // Handle edit picture functionality here
-              },
-              child: const Text('Edit picture', style: TextStyle(color: Colors.pink)),
-            ),
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(labelText: 'Username'),
-            ),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Name'),
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
+            Center(
+              child: Column(
+                children: [
+                  const CircleAvatar(
+                    backgroundImage: AssetImage('assets/images/profile.jpg'), // Add your image asset here
+                    radius: 50,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // Handle edit picture functionality here
+                    },
+                    child: const Text('Edit picture', style: TextStyle(color: Colors.pink)),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Handle save functionality here
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    Colors.pink, // Use backgroundColor instead of primary
+            _buildTextField(label: 'Username', controller: _usernameController),
+            const SizedBox(height: 16),
+            _buildTextField(label: 'Email', controller: _emailController),
+            const SizedBox(height: 16),
+            _buildTextField(label: 'Name', controller: _nameController),
+            const SizedBox(height: 16),
+            _buildTextField(label: 'Password', controller: _passwordController, obscureText: true),
+            const SizedBox(height: 20),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  // Handle save functionality here
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey.shade300,
+                  foregroundColor: Colors.black54,
+                  padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+                child: const Text('Save'),
               ),
-              child: const Text('Save'),
             ),
           ],
         ),
