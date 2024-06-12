@@ -26,6 +26,7 @@ flutter:
   assets:
     - assets/
     - assets/icons/
+    - assets/icons/pinkLogo.png
     - assets/images/
   fonts:
     - family: Rubik

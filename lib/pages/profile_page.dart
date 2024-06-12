@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../components/custom_app_bar.dart';
 import '../components/bottom_nav_bar.dart';
 import 'edit_profile_page.dart';
+import 'login_page.dart';
+import 'register_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -12,6 +14,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   int _selectedIndex = 2;
+  bool isLoggedIn = false; // Initially, the user is not logged in
 
   void _onItemTapped(int index) {
     setState(() {
@@ -20,10 +23,10 @@ class _ProfilePageState extends State<ProfilePage> {
     // Handle navigation based on index
   }
 
-  void _navigateToEditProfile() {
+  void _navigateToPage(BuildContext context, Widget page) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const EditProfilePage()),
+      MaterialPageRoute(builder: (context) => page),
     );
   }
 
@@ -61,112 +64,188 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: const CustomAppBar(title: 'Profile'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              margin: const EdgeInsets.only(bottom: 16.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              child: const ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: AssetImage(
-                      'assets/images/profile.jpg'), // Add your image asset here
-                ),
-                title: Text(
-                  'Lorem Ipsum',
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontVariations: [FontVariation('wght', 600)],
-                    fontSize: 16,
-                  ),
-                ),
-                subtitle: Text(
-                  '@Lorem',
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontVariations: [FontVariation('wght', 400)],
-                    fontSize: 14,
-                    color: Color(0xffb4b4b4),
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              child: Column(
-                children: <Widget>[
-                  ListTile(
-                    leading:
-                        const Icon(Icons.person_outline, color: Colors.pink),
-                    title: const Text(
-                      'My Account',
-                      style: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontVariations: [FontVariation('wght', 500)],
-                        fontSize: 16,
-                      ),
-                    ),
-                    subtitle: const Text(
-                      'Make changes to your account',
-                      style: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontVariations: [FontVariation('wght', 400)],
-                        fontSize: 12,
-                        color: Color(0xffb4b4b4),
-                      ),
-                    ),
-                    trailing: const Padding(
-                      padding: EdgeInsets.only(right: 0.0),
-                      child: Icon(Icons.arrow_forward_ios,
-                          color: Colors.grey, size: 16),
-                    ),
-                    onTap: _navigateToEditProfile,
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.logout, color: Colors.red),
-                    title: const Text(
-                      'Log out',
-                      style: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontVariations: [FontVariation('wght', 500)],
-                        fontSize: 16,
-                        color: Colors.red,
-                      ),
-                    ),
-                    subtitle: const Text(
-                      'Further secure your account for safety',
-                      style: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontVariations: [FontVariation('wght', 400)],
-                        fontSize: 12,
-                        color: Color(0xffb4b4b4),
-                      ),
-                    ),
-                    trailing: const Padding(
-                      padding: EdgeInsets.only(right: 0.0),
-                      child: Icon(Icons.arrow_forward_ios,
-                          color: Colors.grey, size: 16),
-                    ),
-                    onTap: _showLogoutDialog,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        child: isLoggedIn ? _buildProfile() : _buildSignInSignUp(),
       ),
       bottomNavigationBar: BottomNavBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
       ),
+    );
+  }
+
+  Widget _buildProfile() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16.0),
+          margin: const EdgeInsets.only(bottom: 16.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: const ListTile(
+            leading: CircleAvatar(
+              backgroundImage: AssetImage(
+                  'assets/images/profile.jpg'), // Add your image asset here
+            ),
+            title: Text(
+              'Lorem Ipsum',
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                fontVariations: [FontVariation('wght', 600)],
+                fontSize: 16,
+              ),
+            ),
+            subtitle: Text(
+              '@Lorem',
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                fontVariations: [FontVariation('wght', 400)],
+                fontSize: 14,
+                color: Color(0xffb4b4b4),
+              ),
+            ),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: Column(
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.person_outline, color: Colors.pink),
+                title: const Text(
+                  'My Account',
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontVariations: [FontVariation('wght', 500)],
+                    fontSize: 16,
+                  ),
+                ),
+                subtitle: const Text(
+                  'Make changes to your account',
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontVariations: [FontVariation('wght', 400)],
+                    fontSize: 12,
+                    color: Color(0xffb4b4b4),
+                  ),
+                ),
+                trailing: const Padding(
+                  padding: EdgeInsets.only(right: 0.0),
+                  child: Icon(Icons.arrow_forward_ios,
+                      color: Colors.grey, size: 16),
+                ),
+                onTap: () => _navigateToPage(context, EditProfilePage()),
+              ),
+              ListTile(
+                leading: const Icon(Icons.logout, color: Colors.red),
+                title: const Text(
+                  'Log out',
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontVariations: [FontVariation('wght', 500)],
+                    fontSize: 16,
+                    color: Colors.red,
+                  ),
+                ),
+                subtitle: const Text(
+                  'Further secure your account for safety',
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontVariations: [FontVariation('wght', 400)],
+                    fontSize: 12,
+                    color: Color(0xffb4b4b4),
+                  ),
+                ),
+                trailing: const Padding(
+                  padding: EdgeInsets.only(right: 0.0),
+                  child: Icon(Icons.arrow_forward_ios,
+                      color: Colors.grey, size: 16),
+                ),
+                onTap: _showLogoutDialog,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSignInSignUp() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: Column(
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.person_add, color: Colors.blue),
+                title: const Text(
+                  'Sign Up',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontVariations: [FontVariation('wght', 500)],
+                    fontSize: 16,
+                    color: Colors.blue,
+                  ),
+                ),
+                subtitle: const Text(
+                  'Create a new account',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontVariations: [FontVariation('wght', 400)],
+                    fontSize: 12,
+                    color: Color(0xffb4b4b4),
+                  ),
+                ),
+                trailing: const Padding(
+                  padding: EdgeInsets.only(right: 0.0),
+                  child: Icon(Icons.arrow_forward_ios,
+                      color: Colors.grey, size: 16),
+                ),
+                onTap: () => _navigateToPage(context, RegisterPage()),
+              ),
+              ListTile(
+                leading: const Icon(Icons.login, color: Colors.green),
+                title: const Text(
+                  'Sign In',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontVariations: [FontVariation('wght', 500)],
+                    fontSize: 16,
+                    color: Colors.green,
+                  ),
+                ),
+                subtitle: const Text(
+                  'Already have an account? Sign in',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontVariations: [FontVariation('wght', 400)],
+                    fontSize: 12,
+                    color: Color(0xffb4b4b4),
+                  ),
+                ),
+                trailing: const Padding(
+                  padding: EdgeInsets.only(right: 0.0),
+                  child: Icon(Icons.arrow_forward_ios,
+                      color: Colors.grey, size: 16),
+                ),
+                onTap: () => _navigateToPage(context, LoginPage()),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
