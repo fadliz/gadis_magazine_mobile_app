@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/auth_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -9,6 +11,34 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _obscureText = true;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  void _login() async {
+    try {
+      await Provider.of<AuthProvider>(context, listen: false).login(
+        _emailController.text,
+        _passwordController.text,
+      );
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Login Error'),
+            content: Text(e.toString()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +87,11 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                const TextFieldWithTitle(
-                    title: 'Email', hintText: 'Enter your email'),
+                TextFieldWithTitle(
+                  controller: _emailController,
+                  title: 'Email',
+                  hintText: 'Enter your email',
+                ),
                 const SizedBox(height: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -74,6 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 8),
                     TextField(
+                      controller: _passwordController,
                       obscureText: _obscureText,
                       decoration: InputDecoration(
                         hintText: 'Enter your password',
@@ -139,9 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 32),
                 ElevatedButton(
-                  onPressed: () {
-                    // Handle login
-                  },
+                  onPressed: _login,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: const Color(0xFFFD507E),
@@ -200,10 +232,12 @@ class _LoginPageState extends State<LoginPage> {
 class TextFieldWithTitle extends StatelessWidget {
   final String title;
   final String hintText;
+  final TextEditingController controller;
 
   const TextFieldWithTitle({
     required this.title,
     required this.hintText,
+    required this.controller,
     Key? key,
   }) : super(key: key);
 
@@ -223,6 +257,7 @@ class TextFieldWithTitle extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         TextField(
+          controller: controller,
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: const TextStyle(color: Color(0xFF999999)),

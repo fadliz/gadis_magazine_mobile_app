@@ -15,7 +15,7 @@ class BottomNavBar extends StatelessWidget {
         onItemTapped(index);
         switch (index) {
           case 0:
-            Navigator.pushNamed(context, '/');
+            Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
             break;
           case 1:
             Navigator.pushNamed(context, '/articles');

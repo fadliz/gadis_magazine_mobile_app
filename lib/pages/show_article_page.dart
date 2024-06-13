@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:provider/provider.dart';
 import '../components/custom_app_bar.dart';
 import '../components/bottom_nav_bar.dart';
 import 'dart:convert';
 import '../../constant.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import '../services/auth_provider.dart'; // Import your AuthProvider
+import 'login_page.dart'; // Import the login page
+import 'register_page.dart'; // Import the register page
+import 'package:flutter/gestures.dart'; // Import the register page
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ShowArticlePage extends StatefulWidget {
   final int articleId;
@@ -19,20 +26,27 @@ class ShowArticlePage extends StatefulWidget {
 class _ShowArticlePageState extends State<ShowArticlePage> {
   late Map<String, dynamic> _articleData;
   int _selectedIndex = 0;
-  bool _isLoading = true; // Add this variable
-  bool _showAllComments = false; // Add this variable
-  List<dynamic> _displayedComments = []; // List to store displayed comments
+  bool _isLoading = true;
+  bool _showAllComments = false;
+  List<dynamic> _displayedComments = [];
+  final AuthProvider _authProvider =
+      AuthProvider(); // Add AuthProvider instance
+  bool isLoggedIn = false; // Initially, the user is not logged in
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  final _commentController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    _checkAuthentication(); // Check authentication status
     _fetchArticle();
+  }
+
+  Future<void> _checkAuthentication() async {
+    await _authProvider.checkAuth();
+    setState(() {
+      isLoggedIn = _authProvider.isAuthenticated;
+    });
   }
 
   Future<void> _fetchArticle() async {
@@ -49,8 +63,46 @@ class _ShowArticlePageState extends State<ShowArticlePage> {
       // Handle error
       print('Failed to fetch article');
       setState(() {
-        _isLoading = false; // Set isLoading to false even in case of error
+        _isLoading = false;
       });
+    }
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  Future<void> _submitComment() async {
+    if (_commentController.text.isEmpty) return;
+    final FlutterSecureStorage _storage = const FlutterSecureStorage();
+    final token = await _storage.read(key: 'token');
+    Map<String, dynamic> updatedData = {
+      'content': _commentController.text.trim(),
+      'user_id': _authProvider.user['user']['id'],
+      // Add more fields as needed
+    };
+
+    final response = await http.post(
+      Uri.parse('${articlesURL}/${widget.articleId}/comments'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer ${token}', // Assuming you have a token in AuthProvider
+      },
+      body: jsonEncode(updatedData),
+    );
+
+    if (response.statusCode == 201) {
+      // Add the new comment to the comments list
+      setState(() {
+        _articleData['comments'].add(jsonDecode(response.body));
+        _commentController.clear();
+      });
+    } else {
+      // Handle error
+      print('Failed to post comment');
     }
   }
 
@@ -60,7 +112,7 @@ class _ShowArticlePageState extends State<ShowArticlePage> {
       backgroundColor: const Color(0xFFFCF6F6),
       appBar: CustomAppBar(),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator()) // Show loading indicator
+          ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -115,6 +167,8 @@ class _ShowArticlePageState extends State<ShowArticlePage> {
                     const Divider(
                       color: Colors.black,
                     ),
+                    if (isLoggedIn)
+                      _buildCommentInput(), // Add comment input if logged in
                     _buildCommentSection(),
                   ],
                 ),
@@ -128,6 +182,56 @@ class _ShowArticlePageState extends State<ShowArticlePage> {
   }
 
   Widget _buildCommentSection() {
+    if (!isLoggedIn) {
+      return Center(
+        child: Column(
+          children: [
+            SizedBox(height: 16),
+            RichText(
+              text: TextSpan(
+                style: TextStyle(fontSize: 16, color: Colors.black),
+                children: [
+                  TextSpan(
+                      text: 'You must be logged in to post a comment\nPlease '),
+                  TextSpan(
+                    text: 'Sign in',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
+                      },
+                  ),
+                  TextSpan(text: ' or '),
+                  TextSpan(
+                    text: 'Sign up now!',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => RegisterPage()),
+                        );
+                      },
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 8),
+          ],
+        ),
+      );
+    }
+
     if (_articleData.containsKey('comments')) {
       final List<dynamic> allComments = _articleData['comments'];
       _displayedComments =
@@ -141,10 +245,7 @@ class _ShowArticlePageState extends State<ShowArticlePage> {
               comment['content'],
               comment['created_at'],
             ),
-          if (!_showAllComments &&
-              allComments.length >
-                  4) // Conditionally render the button only if there are more than 4 comments
-            SizedBox(height: 16),
+          if (!_showAllComments && allComments.length > 4) SizedBox(height: 16),
           Center(
             child: SizedBox(
               width: 193,
@@ -181,7 +282,6 @@ class _ShowArticlePageState extends State<ShowArticlePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
-            // Replace with actual user profile image if available
             child: Text(
               username[0],
               style: const TextStyle(
@@ -240,6 +340,43 @@ class _ShowArticlePageState extends State<ShowArticlePage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCommentInput() {
+    return Column(
+      children: [
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: _commentController,
+          decoration: InputDecoration(
+            hintText: 'Write a Comment...',
+                  hintStyle: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 14,
+                      fontWeight: FontWeight.normal,
+                      color: Color(0xffb4b4b4)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(100),
+              borderSide: BorderSide(color: Color(0xFFB4B4B4)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(100),
+              borderSide: const BorderSide(color: Color(0xFFB4B4B4)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(100),
+              borderSide: const BorderSide(color: Color(0xFFB4B4B4)),
+            ),
+            suffixIcon: IconButton(
+              icon: SvgPicture.asset('assets/icons/74120.svg'),
+              onPressed: _submitComment,
+            ),
+            filled: true,
+            fillColor: Colors.white,
+          ),
+        ),
+      ],
     );
   }
 }

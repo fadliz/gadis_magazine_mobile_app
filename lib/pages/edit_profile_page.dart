@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import '../components/custom_app_bar.dart';
 import '../components/bottom_nav_bar.dart';
+import '../constant.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class EditProfilePage extends StatefulWidget {
-  const EditProfilePage({super.key});
+  final Map<String, dynamic> user;
+
+  const EditProfilePage({Key? key, required this.user}) : super(key: key);
 
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
@@ -30,6 +36,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _emailController.addListener(_checkIfEmpty);
     _nameController.addListener(_checkIfEmpty);
     _passwordController.addListener(_checkIfEmpty);
+    _usernameController.text = widget.user['username'] ?? '';
+    _emailController.text = widget.user['email'] ?? '';
+    _nameController.text = widget.user['name'] ?? '';
   }
 
   void _checkIfEmpty() {
@@ -94,8 +103,81 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
+  void _showConfirmDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Save'),
+          content: const Text('Are you sure you want save these changes?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                _saveProfile();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Confirm', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _saveProfile() async {
+    // Construct the request body with updated user data
+    Map<String, dynamic> updatedData = {
+      'username': _usernameController.text.trim(),
+      'email': _emailController.text.trim(),
+      'name': _nameController.text.trim(),
+      // Add more fields as needed
+    };
+    final FlutterSecureStorage _storage = const FlutterSecureStorage();
+    final token = await _storage.read(key: 'token');
+    debugPrint(token);
+    debugPrint(_usernameController.text.trim());
+
+    try {
+      final response = await http.post(
+        Uri.parse('$profileURL/process'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+          // Add any necessary headers
+        },
+        body: jsonEncode(updatedData),
+      );
+
+      if (response.statusCode == 200) {
+        // Handle success
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Profile updated successfully')),
+        );
+        // Optionally update local user data or handle navigation
+      } else {
+        // Handle other response codes or errors
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update profile')),
+        );
+      }
+      Navigator.pushNamedAndRemoveUntil(context, '/profile', (route) => false);
+    } catch (e) {
+      // Handle network or server errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final user = widget.user;
     return Scaffold(
       backgroundColor: const Color(0xFFFCF6F6),
       appBar: const CustomAppBar(title: 'Profile'),
@@ -108,9 +190,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
               Center(
                 child: Column(
                   children: [
-                    const CircleAvatar(
-                      backgroundImage: AssetImage(
-                          'assets/images/profile.jpg'), // Add your image asset here
+                    CircleAvatar(
+                      backgroundImage: user['picture'] != null
+                          ? NetworkImage(
+                              '${baseURL}/storage/${user['picture']}')
+                          : AssetImage(
+                              'assets/icons/placeholder_image.png'), // Add your image asset here
                       radius: 50,
                     ),
                     TextButton(
@@ -130,7 +215,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
               ),
               const SizedBox(height: 20),
-              _buildTextField(label: 'Username', controller: _usernameController),
+              _buildTextField(
+                  label: 'Username', controller: _usernameController),
               const SizedBox(height: 16),
               _buildTextField(label: 'Email', controller: _emailController),
               const SizedBox(height: 16),
@@ -145,13 +231,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 child: ElevatedButton(
                   onPressed: _isSaveButtonEnabled
                       ? () {
-                          // Handle save functionality here
+                          _showConfirmDialog();
                         }
                       : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isSaveButtonEnabled
-                        ? Color(0xffFD507E)
-                        : Colors.grey,
+                    backgroundColor:
+                        _isSaveButtonEnabled ? Color(0xffFD507E) : Colors.grey,
                     foregroundColor: Colors.black54,
                     padding: const EdgeInsets.symmetric(
                         vertical: 16.0, horizontal: 170.0),
